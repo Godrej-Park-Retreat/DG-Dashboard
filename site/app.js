@@ -84,6 +84,24 @@ function render() {
   renderCharts(rows);
   renderTable(rows);
   renderAlerts(current, rows);
+  renderRunningBreakdown(rows);
+}
+
+function renderRunningBreakdown(rows) {
+  const byDg = {};
+  DATA.dgs.forEach(d => byDg[d] = 0);
+  rows.forEach(r => { byDg[r.dg] = (byDg[r.dg] || 0) + Number(r.running_hours || 0); });
+  const yard1 = ['DG1','DG2','DG3'];
+  const yard2 = ['DG4','DG5','DG6'];
+  const fmt = (v) => `${Number(v||0).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} h`;
+  const total = Object.values(byDg).reduce((s,v)=>s+v,0);
+  const yardHtml = `
+    <div><strong>Total:</strong> ${fmt(total)}</div>
+    <div style="margin-top:8px"><strong>Yard 1</strong>: ${yard1.map(d=>`${d}: ${fmt(byDg[d])}`).join(' · ')}</div>
+    <div style="margin-top:6px"><strong>Yard 2</strong>: ${yard2.map(d=>`${d}: ${fmt(byDg[d])}`).join(' · ')}</div>
+  `;
+  const el = document.getElementById('runningList');
+  if (el) el.innerHTML = yardHtml;
 }
 
 function monthSeries(rows, key) {
@@ -114,13 +132,84 @@ function renderCharts(rows) {
   });
 
   makeChart('consumptionChart', { type:'bar', data:{ labels: labels, datasets:[{ label:'Consumption (L)', data:consumption, borderRadius:7 }] }, options:{...common} });
-  makeChart('runtimeChart', { type:'bar', data:{ labels: labels, datasets:[{ label:'Running Hours', data:runtime, borderRadius:7 }] }, options:{...common} });
+
+  // Running hours: monthly overview (bars) or daily ECG-like line when a month is selected
+  if (month === 'ALL') {
+    makeChart('runtimeChart', { type:'bar', data:{ labels: labels, datasets:[{ label:'Running Hours', data:runtime, borderRadius:7 }] }, options:{...common} });
+  } else {
+    // Build per-day series from DATA.daily for selected month and DG filter
+    const dayRows = DATA.daily.filter(d => d.month === month && (dg === 'ALL' || d.dg === dg));
+    // get unique sorted dates
+    const days = Array.from(new Set(dayRows.map(d => d.date))).sort();
+    const dailyRuntime = days.map(day => dayRows.filter(d => d.date === day).reduce((s,r) => s + Number(r.runtime_hours || 0), 0));
+    makeChart('runtimeChart', {
+      type: 'line',
+      data: { labels: days.map(d => new Date(d).toLocaleDateString('en-IN')), datasets: [{ label: 'Running Hours / day', data: dailyRuntime }] },
+      options: { ...common, plugins: { legend: { display: false } }, elements: { line: { tension: 0, borderWidth: 2, borderColor: '#16a34a' }, point: { radius: 0 } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true } } }
+    });
+  }
   makeChart('fuelChart', { type:'line', data:{ labels:labels, datasets:[{label:'Fuel Added',data:added,tension:.25},{label:'Consumption',data:consumption,tension:.25}] }, options:{...common, plugins:{legend:{display:true,position:'bottom'}}} });
   makeChart('efficiencyChart', { type:'line', data:{ labels:labels, datasets:[{label:'L/hr',data:lph,tension:.25,fill:false}] }, options:{...common, plugins:{legend:{display:false}}} });
 
-  const statusLabels = currentForSelection().map(r => r.dg);
-  const statusValues = currentForSelection().map(r => r.stock);
-  makeChart('statusChart', { type:'bar', data:{ labels:statusLabels, datasets:[{ label:'Current Stock', data:statusValues, borderRadius:7 }] }, options:{...common, indexAxis:'y'} });
+  const current = currentForSelection();
+  const statusLabels = current.map(r => r.dg);
+  // Determine capacities and filled/remaining
+  const capacities = current.map(r => Number((DATA.capacities && DATA.capacities[r.dg]) || r.tank_capacity || 1000));
+  const filled = current.map(r => Math.max(0, Number(r.stock || 0)));
+  const remaining = capacities.map((c, i) => Math.max(0, c - filled[i]));
+  const maxCapacity = Math.max(...capacities, 1000);
+
+  // color per DG based on percent thresholds
+  const colors = filled.map((v, i) => {
+    const pct = capacities[i] ? (v / capacities[i]) * 100 : 0;
+    if (pct < 20) return '#d64545';
+    if (pct < 30) return '#f0ad4e';
+    return '#4e9af1';
+  });
+
+  const remainingColor = '#e9ecef';
+
+  const barLabelPlugin = {
+    id: 'barLabelPlugin',
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx;
+      const meta = chart.getDatasetMeta(0);
+      meta.data.forEach((bar, i) => {
+        const val = filled[i];
+        const cap = capacities[i];
+        const pct = cap ? Math.round((val / cap) * 100) : 0;
+        const x = bar.x;
+        const y = (bar.y + (bar.base || chart.chartArea.bottom)) / 2;
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '600 12px Inter, Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(pct + '%', x, y);
+        ctx.restore();
+      });
+    }
+  };
+
+  makeChart('statusChart', {
+    type: 'bar',
+    data: {
+      labels: statusLabels,
+      datasets: [
+        { label: 'Filled (L)', data: filled, backgroundColor: colors, borderColor: '#2b2b2b', borderWidth: 1.5, borderRadius: 20, borderSkipped: false },
+        { label: 'Remaining (L)', data: remaining, backgroundColor: remainingColor, borderColor: '#2b2b2b', borderWidth: 1.5, borderRadius: 20, borderSkipped: false }
+      ]
+    },
+    options: {
+      ...common,
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, beginAtZero: true, max: maxCapacity, ticks: { callback: v => `${v} L` } }
+      },
+      plugins: { legend: { display: true, position: 'bottom' }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.raw || 0).toLocaleString('en-IN')} L` } } }
+    },
+    plugins: [barLabelPlugin]
+  });
 }
 
 function renderTable(rows) {
