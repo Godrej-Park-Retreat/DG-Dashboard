@@ -24,7 +24,18 @@ async function load() {
 function initFilters() {
   const month = document.getElementById('monthSelect');
   const dg = document.getElementById('dgSelect');
-  month.innerHTML = '<option value="ALL">All Months</option>' + DATA.months.map(m => `<option value="${m}">${formatMonth(m)}</option>`).join('');
+  // build month dropdown: All Months on top, then current month (selected), then previous months
+  const currentMonth = DATA.date_to ? DATA.date_to.slice(0,7) : (DATA.months && DATA.months.length ? DATA.months[DATA.months.length-1] : null);
+  let monthsList = Array.isArray(DATA.months) ? Array.from(new Set(DATA.months)) : [];
+  // place previous months after the current month (descending newest-first)
+  monthsList = monthsList.filter(m => m !== currentMonth).sort((a,b) => b.localeCompare(a));
+  let monthOptions = '<option value="ALL">All Months</option>';
+  if (currentMonth && DATA.months.includes(currentMonth)) {
+    monthOptions += `<option value="${currentMonth}">${formatMonth(currentMonth)}</option>`;
+  }
+  monthOptions += monthsList.map(m => `<option value="${m}">${formatMonth(m)}</option>`).join('');
+  month.innerHTML = monthOptions;
+  if (currentMonth && DATA.months.includes(currentMonth)) month.value = currentMonth;
   dg.innerHTML = '<option value="ALL">All DGs</option>' + DATA.dgs.map(d => `<option value="${d}">${d}</option>`).join('');
   month.addEventListener('change', render);
   dg.addEventListener('change', render);
@@ -84,10 +95,9 @@ function render() {
   renderCharts(rows);
   renderTable(rows);
   renderAlerts(current, rows);
-  renderRunningBreakdown(rows);
+  renderRuntimeSummary(rows);
 }
-
-function renderRunningBreakdown(rows) {
+function renderRuntimeSummary(rows) {
   const byDg = {};
   DATA.dgs.forEach(d => byDg[d] = 0);
   rows.forEach(r => { byDg[r.dg] = (byDg[r.dg] || 0) + Number(r.running_hours || 0); });
@@ -95,13 +105,20 @@ function renderRunningBreakdown(rows) {
   const yard2 = ['DG4','DG5','DG6'];
   const fmt = (v) => `${Number(v||0).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} h`;
   const total = Object.values(byDg).reduce((s,v)=>s+v,0);
-  const yardHtml = `
-    <div><strong>Total:</strong> ${fmt(total)}</div>
-    <div style="margin-top:8px"><strong>Yard 1</strong>: ${yard1.map(d=>`${d}: ${fmt(byDg[d])}`).join(' · ')}</div>
-    <div style="margin-top:6px"><strong>Yard 2</strong>: ${yard2.map(d=>`${d}: ${fmt(byDg[d])}`).join(' · ')}</div>
+  const html = `
+    <div style="display:flex;gap:18px;align-items:center;">
+      <div><strong>Total:</strong><div style="font-size:18px;margin-top:6px">${fmt(total)}</div></div>
+      <div style="flex:1">
+        <div style="font-weight:700">Yard 1</div>
+        <div style="color:var(--muted);">${yard1.map(d=>`${d}: ${fmt(byDg[d])}`).join(' · ')}</div>
+        <div style="height:6px"></div>
+        <div style="font-weight:700">Yard 2</div>
+        <div style="color:var(--muted);">${yard2.map(d=>`${d}: ${fmt(byDg[d])}`).join(' · ')}</div>
+      </div>
+    </div>
   `;
-  const el = document.getElementById('runningList');
-  if (el) el.innerHTML = yardHtml;
+  const el = document.getElementById('runtimeSummary');
+  if (el) el.innerHTML = html;
 }
 
 function monthSeries(rows, key) {
@@ -169,46 +186,35 @@ function renderCharts(rows) {
 
   const remainingColor = '#e9ecef';
 
-  const barLabelPlugin = {
-    id: 'barLabelPlugin',
-    afterDatasetsDraw(chart) {
-      const ctx = chart.ctx;
-      const meta = chart.getDatasetMeta(0);
-      meta.data.forEach((bar, i) => {
-        const val = filled[i];
-        const cap = capacities[i];
-        const pct = cap ? Math.round((val / cap) * 100) : 0;
-        const x = bar.x;
-        const y = (bar.y + (bar.base || chart.chartArea.bottom)) / 2;
-        ctx.save();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '600 12px Inter, Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(pct + '%', x, y);
-        ctx.restore();
-      });
-    }
-  };
+  // Render status tanks as SVGs instead of Chart.js bar to get a cleaner 'tank' look
+  renderStatusTanks(current);
+}
 
-  makeChart('statusChart', {
-    type: 'bar',
-    data: {
-      labels: statusLabels,
-      datasets: [
-        { label: 'Filled (L)', data: filled, backgroundColor: colors, borderColor: '#2b2b2b', borderWidth: 1.5, borderRadius: 20, borderSkipped: false },
-        { label: 'Remaining (L)', data: remaining, backgroundColor: remainingColor, borderColor: '#2b2b2b', borderWidth: 1.5, borderRadius: 20, borderSkipped: false }
-      ]
-    },
-    options: {
-      ...common,
-      scales: {
-        x: { stacked: true, grid: { display: false } },
-        y: { stacked: true, beginAtZero: true, max: maxCapacity, ticks: { callback: v => `${v} L` } }
-      },
-      plugins: { legend: { display: true, position: 'bottom' }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.raw || 0).toLocaleString('en-IN')} L` } } }
-    },
-    plugins: [barLabelPlugin]
+function renderStatusTanks(current) {
+  const container = document.getElementById('statusChart');
+  if (!container) return;
+  container.innerHTML = '';
+  const capacities = current.map(r => Number((DATA.capacities && DATA.capacities[r.dg]) || r.tank_capacity || 1000));
+  current.forEach((r, i) => {
+    const cap = capacities[i] || 1000;
+    const filled = Math.max(0, Number(r.stock || 0));
+    const pct = Math.min(100, cap ? Math.round((filled / cap) * 100) : 0);
+    const color = pct < 20 ? '#d64545' : (pct < 30 ? '#f0ad4e' : '#4e9af1');
+
+    const width = 90, height = 220, radius = 18;
+    const filledHeight = Math.round((pct / 100) * (height - 20));
+    const svg = `
+      <div class="tank-wrap" style="width:${width}px; text-align:center; margin-right:14px">
+        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="${width-20}" height="${height-20}" rx="14" ry="14" fill="#f5f7fa" stroke="#dfe7ef" />
+          <rect x="10" y="${10 + (height-20 - filledHeight)}" width="${width-20}" height="${filledHeight}" rx="14" ry="14" fill="${color}" />
+          <text x="${width/2}" y="${height - 6}" font-size="12" text-anchor="middle" fill="#263238">${r.dg}</text>
+          <title>${r.dg} - ${filled} L (${pct}%)\nCapacity: ${cap} L</title>
+        </svg>
+        <div style="margin-top:6px;font-weight:700;color:${color}">${pct}%</div>
+        <div style="font-size:12px;color:var(--muted)">${filled} L</div>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', svg);
   });
 }
 

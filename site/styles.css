@@ -49,3 +49,12 @@ th { background:#fafbfd; color:var(--muted); font-size:11px; text-transform:uppe
 .footer { padding:20px 30px 35px; text-align:center; color:var(--muted); font-size:12px; }
 @media (max-width: 1200px) { .kpis { grid-template-columns: repeat(4, 1fr); } .filter-help { display:none; } }
 @media (max-width: 800px) { .topbar { padding:20px; flex-direction:column; align-items:flex-start; } .page { padding:18px; } .filters { flex-wrap:wrap; } .kpis { grid-template-columns: repeat(2, 1fr); } .grid { grid-template-columns:1fr; } .chart-card.wide { grid-column: span 1; } }
+
+/* Status tanks */
+.status-tanks { display:flex; align-items:flex-end; gap:12px; padding:8px; }
+.tank-wrap { display:inline-block; }
+
+/* Runtime summary */
+#runtimeSummary { padding:8px 6px; background:transparent; }
+
+@media (max-width: 800px) { .status-tanks { overflow:auto; } .tank-wrap { margin-right:10px; } }

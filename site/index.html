@@ -32,7 +32,6 @@
 
     <section class="kpis">
       <div class="kpi"><span>Running Hours</span><strong id="kpiRuntime">—</strong></div>
-      <div id="runningBreakdown" class="kpi running-breakdown"><span>Running Hours (by DG)</span><div id="runningList">—</div></div>
       <div class="kpi"><span>Fuel Consumption</span><strong id="kpiConsumption">—</strong></div>
       <div class="kpi"><span>Avg L/hr</span><strong id="kpiLph">—</strong></div>
       <div class="kpi"><span>Fuel Added</span><strong id="kpiAdded">—</strong></div>
@@ -48,7 +47,7 @@
       </article>
       <article class="card chart-card">
         <div class="card-title">Current DG Status</div>
-        <canvas id="statusChart"></canvas>
+        <div id="statusChart" class="status-tanks"></div>
       </article>
       <article class="card chart-card">
         <div class="card-title">Fuel Added vs Consumption</div>
@@ -56,6 +55,7 @@
       </article>
       <article class="card chart-card wide">
         <div class="card-title">Running Hours</div>
+        <div id="runtimeSummary" style="margin-bottom:10px"></div>
         <canvas id="runtimeChart"></canvas>
       </article>
       <article class="card chart-card wide">
