@@ -105,7 +105,7 @@ function renderRuntimeSummary(rows) {
   const yard2 = ['DG4','DG5','DG6'];
   const fmt = (v) => `${Number(v||0).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} h`;
   const total = Object.values(byDg).reduce((s,v)=>s+v,0);
-  const html = `
+  const legacyHtml = `
     <div style="display:flex;gap:18px;align-items:center;">
       <div><strong>Total:</strong><div style="font-size:18px;margin-top:6px">${fmt(total)}</div></div>
       <div style="flex:1">
@@ -117,6 +117,10 @@ function renderRuntimeSummary(rows) {
       </div>
     </div>
   `;
+  const html = `<div class="runtime-lines">
+    <div class="runtime-line total"><strong>Total</strong><span>${fmt(total)}</span></div>
+    ${DATA.dgs.map(dgName => `<div class="runtime-line"><strong>${dgName}</strong><span>${fmt(byDg[dgName])}</span></div>`).join('')}
+  </div>`;
   const el = document.getElementById('runtimeSummary');
   if (el) el.innerHTML = html;
 }
@@ -132,6 +136,10 @@ function makeChart(id, config) {
 }
 
 const common = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true } } };
+const DG_SERIES_COLORS = {
+  DG1: '#2563eb', DG2: '#14b8a6', DG3: '#8b5cf6',
+  DG4: '#f97316', DG5: '#ec4899', DG6: '#64748b'
+};
 
 function renderCharts(rows) {
   const { month, dg } = selected();
@@ -165,28 +173,30 @@ function renderCharts(rows) {
       options: { ...common, plugins: { legend: { display: false } }, elements: { line: { tension: 0, borderWidth: 2, borderColor: '#16a34a' }, point: { radius: 0 } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true } } }
     });
   }
-  makeChart('fuelChart', { type:'line', data:{ labels:labels, datasets:[{label:'Fuel Added',data:added,tension:.25},{label:'Consumption',data:consumption,tension:.25}] }, options:{...common, plugins:{legend:{display:true,position:'bottom'}}} });
+  const fuelSeries = DATA.dgs
+    .filter(dgName => dg === 'ALL' || dgName === dg)
+    .flatMap(dgName => {
+      const color = DG_SERIES_COLORS[dgName];
+      const values = key => monthKeys.map(m => chartRows
+        .filter(r => r.month === m && r.dg === dgName)
+        .reduce((sum, r) => sum + Number(r[key] || 0), 0));
+      return [
+        { label: `${dgName} Fuel Added`, data: values('fuel_added'), borderColor: color, backgroundColor: color, tension: .25 },
+        { label: `${dgName} Consumption`, data: values('consumption'), borderColor: color, backgroundColor: color, borderDash: [6, 4], tension: .25 }
+      ];
+    });
+  makeChart('fuelChart', {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Total Fuel Added', data: added, borderColor: '#0f4c81', backgroundColor: '#0f4c81', borderWidth: 3, tension: .25 },
+      { label: 'Total Consumption', data: consumption, borderColor: '#dc4c64', backgroundColor: '#dc4c64', borderWidth: 3, borderDash: [8, 4], tension: .25 },
+      ...fuelSeries
+    ] },
+    options: { ...common, plugins: { legend: { display: true, position: 'bottom' } } }
+  });
   makeChart('efficiencyChart', { type:'line', data:{ labels:labels, datasets:[{label:'L/hr',data:lph,tension:.25,fill:false}] }, options:{...common, plugins:{legend:{display:false}}} });
 
   const current = currentForSelection();
-  const statusLabels = current.map(r => r.dg);
-  // Determine capacities and filled/remaining
-  const capacities = current.map(r => Number((DATA.capacities && DATA.capacities[r.dg]) || r.tank_capacity || 1000));
-  const filled = current.map(r => Math.max(0, Number(r.stock || 0)));
-  const remaining = capacities.map((c, i) => Math.max(0, c - filled[i]));
-  const maxCapacity = Math.max(...capacities, 1000);
-
-  // color per DG based on percent thresholds
-  const colors = filled.map((v, i) => {
-    const pct = capacities[i] ? (v / capacities[i]) * 100 : 0;
-    if (pct < 20) return '#d64545';
-    if (pct < 30) return '#f0ad4e';
-    return '#4e9af1';
-  });
-
-  const remainingColor = '#e9ecef';
-
-  // Render status tanks as SVGs instead of Chart.js bar to get a cleaner 'tank' look
   renderStatusTanks(current);
 }
 
@@ -223,20 +233,24 @@ function renderStatusTanks(current) {
     const cap = capacities[i] || 1000;
     const filled = Math.max(0, Number(r.stock || 0));
     const pct = Math.min(100, cap ? Math.round((filled / cap) * 100) : 0);
+    const remaining = Math.max(0, cap - filled);
+    const remainingPct = Math.max(0, 100 - pct);
     const color = pct < 20 ? '#d64545' : (pct < 30 ? '#f0ad4e' : '#4e9af1');
 
-    const width = 90, height = 220, radius = 18;
+    const width = 90, height = 220;
     const filledHeight = Math.round((pct / 100) * (height - 20));
     const svg = `
       <div class="tank-wrap" style="width:${width}px; text-align:center; margin-right:14px">
         <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
           <rect x="10" y="10" width="${width-20}" height="${height-20}" rx="14" ry="14" fill="#f5f7fa" stroke="#dfe7ef" />
           <rect x="10" y="${10 + (height-20 - filledHeight)}" width="${width-20}" height="${filledHeight}" rx="14" ry="14" fill="${color}" />
-          <text x="${width/2}" y="${height - 6}" font-size="12" text-anchor="middle" fill="#263238">${r.dg}</text>
-          <title>${r.dg} - ${filled} L (${pct}%)\nCapacity: ${cap} L</title>
+          <text x="${width/2}" y="38" font-size="11" font-weight="700" text-anchor="middle" fill="#526174">${remainingPct}% remaining</text>
+          <text x="${width/2}" y="55" font-size="11" text-anchor="middle" fill="#526174">${num(remaining, 0)} L free</text>
+          <title>${r.dg} - Available: ${filled} L (${pct}%)\nRemaining: ${remaining} L (${remainingPct}%)\nCapacity: ${cap} L</title>
         </svg>
-        <div style="margin-top:6px;font-weight:700;color:${color}">${pct}%</div>
-        <div style="font-size:12px;color:var(--muted)">${filled} L</div>
+        <div style="margin-top:9px;font-weight:700;color:var(--text)">${r.dg}</div>
+        <div style="margin-top:4px;font-size:12px;color:var(--muted)">Capacity: ${num(cap, 0)} L</div>
+        <div style="margin-top:3px;font-size:12px;color:${color}">Available: ${num(filled, 0)} L (${pct}%)</div>
       </div>`;
     container.insertAdjacentHTML('beforeend', svg);
   });
