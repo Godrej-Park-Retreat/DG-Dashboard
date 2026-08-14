@@ -132,10 +132,6 @@ function makeChart(id, config) {
 }
 
 const common = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true } } };
-const DG_COLORS = {
-  DG1: '#2563eb', DG2: '#14b8a6', DG3: '#8b5cf6',
-  DG4: '#f97316', DG5: '#ec4899', DG6: '#64748b'
-};
 
 function renderCharts(rows) {
   const { month, dg } = selected();
@@ -152,34 +148,7 @@ function renderCharts(rows) {
     return h ? c/h : 0;
   });
 
-  const consumptionByDg = (dgs) => dgs.map(dgName => ({
-    label: dgName,
-    data: monthKeys.map(m => chartRows
-      .filter(r => r.month === m && r.dg === dgName)
-      .reduce((sum, r) => sum + Number(r.consumption || 0), 0)),
-    backgroundColor: DG_COLORS[dgName],
-    borderRadius: 7
-  }));
-  const consumptionOptions = {
-    ...common,
-    plugins: { legend: { display: true, position: 'bottom' } }
-  };
-
-  makeChart('totalConsumptionChart', {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Total Consumption (L)', data: consumption, backgroundColor: '#4e9af1', borderRadius: 7 }] },
-    options: { ...common }
-  });
-  makeChart('yard1ConsumptionChart', {
-    type: 'bar',
-    data: { labels, datasets: consumptionByDg(['DG1', 'DG2', 'DG3']) },
-    options: consumptionOptions
-  });
-  makeChart('yard2ConsumptionChart', {
-    type: 'bar',
-    data: { labels, datasets: consumptionByDg(['DG4', 'DG5', 'DG6']) },
-    options: consumptionOptions
-  });
+  renderConsumptionSummary(chartRows);
 
   // Running hours: monthly overview (bars) or daily ECG-like line when a month is selected
   if (month === 'ALL') {
@@ -219,6 +188,30 @@ function renderCharts(rows) {
 
   // Render status tanks as SVGs instead of Chart.js bar to get a cleaner 'tank' look
   renderStatusTanks(current);
+}
+
+function renderConsumptionSummary(rows) {
+  const total = rows.reduce((sum, row) => sum + Number(row.consumption || 0), 0);
+  const group = (title, dgs, className) => `
+    <div class="consumption-group ${className}">
+      <div class="consumption-group-title">${title}</div>
+      <div class="consumption-dgs">
+        ${dgs.map(dgName => {
+          const value = rows
+            .filter(row => row.dg === dgName)
+            .reduce((sum, row) => sum + Number(row.consumption || 0), 0);
+          return `<div class="consumption-dg"><span>${dgName}</span><strong>${money(value)}</strong></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  document.getElementById('consumptionSummary').innerHTML = `
+    <div class="consumption-total">
+      <div class="consumption-label">Total Consumption</div>
+      <strong>${money(total)}</strong>
+    </div>
+    ${group('DG1–DG3', ['DG1', 'DG2', 'DG3'], 'yard-1')}
+    ${group('DG4–DG6', ['DG4', 'DG5', 'DG6'], 'yard-2')}
+  `;
 }
 
 function renderStatusTanks(current) {
