@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DG Fuel & Running Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">DG MONITORING</div>
+      <h1>DG Fuel & Running Dashboard</h1>
+      <div id="statusLine" class="status">Loading data…</div>
+    </div>
+    <div class="top-actions">
+      <button id="refreshBtn" class="secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="filters card">
+      <label>Month
+        <select id="monthSelect"></select>
+      </label>
+      <label>DG
+        <select id="dgSelect"></select>
+      </label>
+      <div class="filter-help">Use <b>All Months</b> for the full history or choose a month for monthly operating details.</div>
+    </section>
+
+    <section class="kpis">
+      <div class="kpi"><span>Running Hours</span><strong id="kpiRuntime">—</strong></div>
+      <div class="kpi"><span>Fuel Consumption</span><strong id="kpiConsumption">—</strong></div>
+      <div class="kpi"><span>Avg L/hr</span><strong id="kpiLph">—</strong></div>
+      <div class="kpi"><span>Fuel Added</span><strong id="kpiAdded">—</strong></div>
+      <div class="kpi"><span>Current Stock</span><strong id="kpiStock">—</strong></div>
+      <div class="kpi"><span>Fuel Pending</span><strong id="kpiPending">—</strong></div>
+      <div class="kpi"><span>Excess Stock</span><strong id="kpiExcess">—</strong></div>
+    </section>
+
+    <section class="grid charts-grid">
+      <article class="card chart-card wide">
+        <div class="card-title">Monthly Consumption</div>
+        <canvas id="consumptionChart"></canvas>
+      </article>
+      <article class="card chart-card">
+        <div class="card-title">Current DG Status</div>
+        <canvas id="statusChart"></canvas>
+      </article>
+      <article class="card chart-card">
+        <div class="card-title">Fuel Added vs Consumption</div>
+        <canvas id="fuelChart"></canvas>
+      </article>
+      <article class="card chart-card wide">
+        <div class="card-title">Running Hours</div>
+        <canvas id="runtimeChart"></canvas>
+      </article>
+      <article class="card chart-card wide">
+        <div class="card-title">Average Fuel Consumption (L/hr)</div>
+        <canvas id="efficiencyChart"></canvas>
+      </article>
+    </section>
+
+    <section class="card table-card">
+      <div class="table-head">
+        <div>
+          <div class="card-title">Monthly DG Statistics</div>
+          <div class="muted">Selected filters: <span id="filterSummary">All Months · All DGs</span></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="statsTable">
+          <thead>
+            <tr>
+              <th>Month</th><th>DG</th><th>Running Hrs</th><th>Consumption</th><th>L/hr</th><th>Fuel Added</th><th>Closing Stock</th><th>Pending</th><th>Excess</th><th>Adjustment</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card alerts-card">
+      <div class="card-title">Alerts & Notes</div>
+      <div id="alerts"></div>
+    </section>
+  </main>
+
+  <footer class="footer">Source: Google Drive XLSX · Updated <span id="footerUpdated">—</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
