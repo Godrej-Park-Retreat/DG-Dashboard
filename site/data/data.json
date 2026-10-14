@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-13T12:05:00.813874+00:00",
+  "generated_at": "2026-10-14T09:40:35.987695+00:00",
   "source_file": "DG_Readings.xlsx",
   "reserve_pct": 0.2,
   "date_from": "2026-07-01",
-  "date_to": "2026-10-10",
+  "date_to": "2026-10-14",
   "months": [
     "2026-07",
     "2026-08",
@@ -319,18 +319,18 @@
     {
       "month": "2026-10",
       "dg": "DG1",
-      "running_hours": 9.019999999999982,
-      "consumption": 250.0,
+      "running_hours": 10.240000000000009,
+      "consumption": 300.0,
       "fuel_added": 350.0,
-      "avg_lph": 27.716186252771674,
+      "avg_lph": 29.296874999999975,
       "opening_stock": 200.0,
-      "closing_stock": 300.0,
+      "closing_stock": 250.0,
       "tank_capacity": 1000,
       "reserve": 200.0,
       "fuel_pending": 0.0,
-      "excess_stock": 100.0,
+      "excess_stock": 50.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-10"
+      "last_reading": "2026-10-14"
     },
     {
       "month": "2026-10",
@@ -346,23 +346,23 @@
       "fuel_pending": 0.0,
       "excess_stock": 650.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-10"
+      "last_reading": "2026-10-14"
     },
     {
       "month": "2026-10",
       "dg": "DG3",
-      "running_hours": 7.02000000000001,
-      "consumption": 450.0,
+      "running_hours": 8.869999999999976,
+      "consumption": 650.0,
       "fuel_added": 200.0,
-      "avg_lph": 64.102564102564,
+      "avg_lph": 73.28072153325837,
       "opening_stock": 850.0,
-      "closing_stock": 600.0,
+      "closing_stock": 400.0,
       "tank_capacity": 1000,
       "reserve": 200.0,
       "fuel_pending": 0.0,
-      "excess_stock": 400.0,
+      "excess_stock": 200.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-10"
+      "last_reading": "2026-10-14"
     },
     {
       "month": "2026-10",
@@ -378,7 +378,7 @@
       "fuel_pending": 0.0,
       "excess_stock": 450.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-10"
+      "last_reading": "2026-10-14"
     },
     {
       "month": "2026-10",
@@ -394,15 +394,15 @@
       "fuel_pending": 0.0,
       "excess_stock": 200.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-10"
+      "last_reading": "2026-10-14"
     },
     {
       "month": "2026-10",
       "dg": "DG6",
-      "running_hours": 8.850000000000023,
+      "running_hours": 10.0,
       "consumption": 250.0,
       "fuel_added": 0.0,
-      "avg_lph": 28.248587570621396,
+      "avg_lph": 25.0,
       "opening_stock": 750.0,
       "closing_stock": 500.0,
       "tank_capacity": 1000,
@@ -410,7 +410,7 @@
       "fuel_pending": 0.0,
       "excess_stock": 300.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-10"
+      "last_reading": "2026-10-14"
     }
   ],
   "daily": [
@@ -1537,6 +1537,50 @@
       "running_hours_meter": 269.21
     },
     {
+      "date": "2026-10-11",
+      "month": "2026-10",
+      "dg": "DG1",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 300.0,
+      "running_hours_meter": 269.21
+    },
+    {
+      "date": "2026-10-12",
+      "month": "2026-10",
+      "dg": "DG1",
+      "runtime_hours": 0.05000000000001137,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 300.0,
+      "running_hours_meter": 269.26
+    },
+    {
+      "date": "2026-10-13",
+      "month": "2026-10",
+      "dg": "DG1",
+      "runtime_hours": 0.19999999999998863,
+      "consumption": 50.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 250.0,
+      "running_hours_meter": 269.46
+    },
+    {
+      "date": "2026-10-14",
+      "month": "2026-10",
+      "dg": "DG1",
+      "runtime_hours": 0.9700000000000273,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 250.0,
+      "running_hours_meter": 270.43
+    },
+    {
       "date": "2026-07-01",
       "month": "2026-07",
       "dg": "DG2",
@@ -2649,6 +2693,50 @@
     },
     {
       "date": "2026-10-10",
+      "month": "2026-10",
+      "dg": "DG2",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 850.0,
+      "running_hours_meter": 190.25
+    },
+    {
+      "date": "2026-10-11",
+      "month": "2026-10",
+      "dg": "DG2",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 850.0,
+      "running_hours_meter": 190.25
+    },
+    {
+      "date": "2026-10-12",
+      "month": "2026-10",
+      "dg": "DG2",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 850.0,
+      "running_hours_meter": 190.25
+    },
+    {
+      "date": "2026-10-13",
+      "month": "2026-10",
+      "dg": "DG2",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 850.0,
+      "running_hours_meter": 190.25
+    },
+    {
+      "date": "2026-10-14",
       "month": "2026-10",
       "dg": "DG2",
       "runtime_hours": 0.0,
@@ -3781,6 +3869,50 @@
       "running_hours_meter": 262.55
     },
     {
+      "date": "2026-10-11",
+      "month": "2026-10",
+      "dg": "DG3",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 600.0,
+      "running_hours_meter": 262.55
+    },
+    {
+      "date": "2026-10-12",
+      "month": "2026-10",
+      "dg": "DG3",
+      "runtime_hours": 0.8499999999999659,
+      "consumption": 150.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 450.0,
+      "running_hours_meter": 263.4
+    },
+    {
+      "date": "2026-10-13",
+      "month": "2026-10",
+      "dg": "DG3",
+      "runtime_hours": 0.0,
+      "consumption": 50.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 400.0,
+      "running_hours_meter": 263.15
+    },
+    {
+      "date": "2026-10-14",
+      "month": "2026-10",
+      "dg": "DG3",
+      "runtime_hours": 1.25,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 400.0,
+      "running_hours_meter": 264.4
+    },
+    {
       "date": "2026-07-01",
       "month": "2026-07",
       "dg": "DG4",
@@ -4893,6 +5025,50 @@
     },
     {
       "date": "2026-10-10",
+      "month": "2026-10",
+      "dg": "DG4",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 650.0,
+      "running_hours_meter": 152.51
+    },
+    {
+      "date": "2026-10-11",
+      "month": "2026-10",
+      "dg": "DG4",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 650.0,
+      "running_hours_meter": 152.51
+    },
+    {
+      "date": "2026-10-12",
+      "month": "2026-10",
+      "dg": "DG4",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 650.0,
+      "running_hours_meter": 152.51
+    },
+    {
+      "date": "2026-10-13",
+      "month": "2026-10",
+      "dg": "DG4",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 650.0,
+      "running_hours_meter": 152.51
+    },
+    {
+      "date": "2026-10-14",
       "month": "2026-10",
       "dg": "DG4",
       "runtime_hours": 0.0,
@@ -6025,6 +6201,50 @@
       "running_hours_meter": 167.4
     },
     {
+      "date": "2026-10-11",
+      "month": "2026-10",
+      "dg": "DG5",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 400.0,
+      "running_hours_meter": 167.4
+    },
+    {
+      "date": "2026-10-12",
+      "month": "2026-10",
+      "dg": "DG5",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 400.0,
+      "running_hours_meter": 167.4
+    },
+    {
+      "date": "2026-10-13",
+      "month": "2026-10",
+      "dg": "DG5",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 400.0,
+      "running_hours_meter": 167.4
+    },
+    {
+      "date": "2026-10-14",
+      "month": "2026-10",
+      "dg": "DG5",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 400.0,
+      "running_hours_meter": 167.4
+    },
+    {
       "date": "2026-07-01",
       "month": "2026-07",
       "dg": "DG6",
@@ -7145,23 +7365,67 @@
       "fuel_added": 0.0,
       "stock": 500.0,
       "running_hours_meter": 272.38
+    },
+    {
+      "date": "2026-10-11",
+      "month": "2026-10",
+      "dg": "DG6",
+      "runtime_hours": 0.0,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 500.0,
+      "running_hours_meter": 272.38
+    },
+    {
+      "date": "2026-10-12",
+      "month": "2026-10",
+      "dg": "DG6",
+      "runtime_hours": 0.09000000000003183,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 500.0,
+      "running_hours_meter": 272.47
+    },
+    {
+      "date": "2026-10-13",
+      "month": "2026-10",
+      "dg": "DG6",
+      "runtime_hours": 0.1099999999999568,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 500.0,
+      "running_hours_meter": 272.58
+    },
+    {
+      "date": "2026-10-14",
+      "month": "2026-10",
+      "dg": "DG6",
+      "runtime_hours": 0.9499999999999886,
+      "consumption": 0.0,
+      "adjustment": 0.0,
+      "fuel_added": 0.0,
+      "stock": 500.0,
+      "running_hours_meter": 273.53
     }
   ],
   "current": [
     {
       "dg": "DG1",
-      "date": "2026-10-10",
-      "running_hours_meter": 269.21,
-      "stock": 300.0,
-      "balance_pct": 30.0,
+      "date": "2026-10-14",
+      "running_hours_meter": 270.43,
+      "stock": 250.0,
+      "balance_pct": 25.0,
       "tank_capacity": 1000,
       "reserve": 200.0,
       "fuel_pending": 0.0,
-      "excess_stock": 100.0
+      "excess_stock": 50.0
     },
     {
       "dg": "DG2",
-      "date": "2026-10-10",
+      "date": "2026-10-14",
       "running_hours_meter": 190.25,
       "stock": 850.0,
       "balance_pct": 85.0,
@@ -7172,18 +7436,18 @@
     },
     {
       "dg": "DG3",
-      "date": "2026-10-10",
-      "running_hours_meter": 262.55,
-      "stock": 600.0,
-      "balance_pct": 60.0,
+      "date": "2026-10-14",
+      "running_hours_meter": 264.4,
+      "stock": 400.0,
+      "balance_pct": 40.0,
       "tank_capacity": 1000,
       "reserve": 200.0,
       "fuel_pending": 0.0,
-      "excess_stock": 400.0
+      "excess_stock": 200.0
     },
     {
       "dg": "DG4",
-      "date": "2026-10-10",
+      "date": "2026-10-14",
       "running_hours_meter": 152.51,
       "stock": 650.0,
       "balance_pct": 65.0,
@@ -7194,7 +7458,7 @@
     },
     {
       "dg": "DG5",
-      "date": "2026-10-10",
+      "date": "2026-10-14",
       "running_hours_meter": 167.4,
       "stock": 400.0,
       "balance_pct": 40.0,
@@ -7205,8 +7469,8 @@
     },
     {
       "dg": "DG6",
-      "date": "2026-10-10",
-      "running_hours_meter": 272.38,
+      "date": "2026-10-14",
+      "running_hours_meter": 273.53,
       "stock": 500.0,
       "balance_pct": 50.0,
       "tank_capacity": 1000,
