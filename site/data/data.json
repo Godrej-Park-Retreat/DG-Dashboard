@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-22T09:34:10.991837+00:00",
+  "generated_at": "2026-10-23T09:30:27.858131+00:00",
   "source_file": "DG_Readings.xlsx",
   "reserve_pct": 0.2,
   "date_from": "2026-07-01",
@@ -400,17 +400,17 @@
       "month": "2026-10",
       "dg": "DG6",
       "running_hours": 42.76000000000005,
-      "consumption": 900.0,
+      "consumption": 950.0,
       "fuel_added": 400.0,
-      "avg_lph": 21.047708138447124,
+      "avg_lph": 22.21702525724974,
       "opening_stock": 750.0,
-      "closing_stock": 250.0,
+      "closing_stock": 200.0,
       "tank_capacity": 1000,
       "reserve": 200.0,
       "fuel_pending": 0.0,
-      "excess_stock": 50.0,
+      "excess_stock": 0.0,
       "adjustment": 0.0,
-      "last_reading": "2026-10-21"
+      "last_reading": "2026-10-22"
     }
   ],
   "daily": [
@@ -7932,10 +7932,10 @@
       "month": "2026-10",
       "dg": "DG6",
       "runtime_hours": 2.170000000000016,
-      "consumption": 0.0,
+      "consumption": 50.0,
       "adjustment": 0.0,
       "fuel_added": 0.0,
-      "stock": null,
+      "stock": 200.0,
       "running_hours_meter": 306.29
     }
   ],
@@ -7999,11 +7999,11 @@
       "dg": "DG6",
       "date": "2026-10-22",
       "running_hours_meter": 306.29,
-      "stock": 0.0,
+      "stock": 200.0,
       "balance_pct": 20.0,
       "tank_capacity": 1000,
       "reserve": 200.0,
-      "fuel_pending": 200.0,
+      "fuel_pending": 0.0,
       "excess_stock": 0.0
     }
   ]
